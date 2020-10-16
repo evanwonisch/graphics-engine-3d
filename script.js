@@ -140,6 +140,9 @@ class Vector3D{
     add(x, y, z){
         return new Vector3D(this.x + x, this.y + y, this. z + z)
     }
+    scale(x,y,z){
+        return new Vector3D(this.x * x, this.y * y, this.z * z)
+    }
 }
 
 class Vector2D{
@@ -161,7 +164,8 @@ class Mesh3DTriangle{
             throw "Triangle must have 3 vertices"
         }
         this.vertices = vector3List
-        this.zIndex = vector3List.reduce((a, b) => b.z > a ? b.z : a, 0)
+        this.mean = this.vertices.reduce((acc, val) => acc.add(val.x, val.y, val.z), new Vector3D(0,0,0))
+        this.zIndex = this.mean.z
         this.color = color
     }
 }
