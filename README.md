@@ -4,5 +4,6 @@
  # Watch the Results
  https://evanwonisch.github.io/3D-Graphics/
  
- # See script.js for documentation on how it works
+ # Documentation
+ See script.js for documentation on how it works
  
