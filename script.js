@@ -25,6 +25,7 @@ class Main{
         this.time = 0;
         this.projection = new Projection();
         
+        //Define a cube
         var cube = [
             new Mesh3DTriangle([
                 new Vector3D(0,0,0),
@@ -89,13 +90,13 @@ class Main{
         ]
         this.cube = new Mesh3D(cube)
 
-
     }
     update(){
         this.time += 0.01
         var meshes = []
 
-        for(var i = 1; i < 3; i++) {
+        //Create some more Cubes and move them
+        for(var i = 0; i < 3; i++) {
             meshes.push(
                 this.cube
                 .translate(-0.5,-0.5,-0.5)
@@ -108,8 +109,15 @@ class Main{
         }
         
 
+        //Rendering Part
+
+        //Projecting 3D coordinates to 2D coordinates
         var meshes2d = meshes.map(mesh => this.projection.project(mesh))
+
+        //Getting all Mesh Triangles
         var triangles = meshes2d.reduce((acc, val) => acc.concat(val.triangles) , [])
+
+        //Sort them by z-Index (draw farthest ones first)
         triangles.sort((a,b) => b.zIndex - a.zIndex)
         triangles.forEach(triangle => {
             triangle.draw();
@@ -130,7 +138,9 @@ class Main{
 
 
 
-
+/**
+ * A 3 dimensional Vector class
+ */
 class Vector3D{
     constructor(x, y, z){
         this.x = x;
@@ -145,6 +155,9 @@ class Vector3D{
     }
 }
 
+/**
+ * A 2 dimensional Vector class
+ */
 class Vector2D{
     constructor(x,y){
         this.x = x;
@@ -158,6 +171,9 @@ class Vector2D{
     }
 }
 
+/**
+ * A collection of 3 3D-Vectors
+ */
 class Mesh3DTriangle{
     constructor(vector3List, color){
         if(vector3List.length != 3){
@@ -170,6 +186,9 @@ class Mesh3DTriangle{
     }
 }
 
+/**
+ * A collection of 3 2D-Vectors
+ */
 class Mesh2DTriangle{
     constructor(vector2List, zIndex, color){
         if(vector2List.length != 3){
@@ -179,6 +198,9 @@ class Mesh2DTriangle{
         this.zIndex = zIndex
         this.color = color
     }
+    /**
+     * Draws this 2D Triangle to the screen
+     */
     draw(){
         ctx.fillStyle = this.color
         ctx.beginPath()
@@ -189,14 +211,32 @@ class Mesh2DTriangle{
     }
 }
 
+/**
+ * A Collection of many 3D-Triangles wich form a 3D Body
+ */
 class Mesh3D{
     constructor(mesh3DTriangles){
         this.triangles = mesh3DTriangles
     }
     
+    /**
+     * Translates all Vertices by the given amount
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} z
+     * @returns {Mesh3D} The translated Mesh
+     */
     translate(x, y, z) {
         return new Mesh3D(this.triangles.map(triangle => new Mesh3DTriangle(triangle.vertices.map(vector3 => vector3.add(x, y, z)), triangle.color)))
     }
+
+    /**
+     * Scales all vertices by the given amount
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} z
+     * @returns {Mesh3D} The scaled Mesh
+     */
     scale(x, y, z){
         if(!y){
             return new Mesh3D(this.triangles.map(triangle => new Mesh3DTriangle(triangle.vertices.map(vector3 => new Vector3D(vector3.x * x, vector3.y * x, vector3.z * x)), triangle.color)))
@@ -205,6 +245,11 @@ class Mesh3D{
         }
     }
 
+    /**
+     * Rotates all vertices around the origin via the X-axis
+     * @param {Number} alpha in radians
+     * @returns {Mesh3D} the rotated Mesh
+     */
     rotateX(alpha){
         return new Mesh3D(this.triangles.map(triangle => new Mesh3DTriangle(triangle.vertices.map(vector3 => {
             var x = vector3.x;
@@ -216,6 +261,11 @@ class Mesh3D{
         }), triangle.color)))
     }
 
+    /**
+     * Rotates all vertices around the origin via the Y-axis
+     * @param {Number} alpha in radians
+     * @returns {Mesh3D} the rotated Mesh
+     */
     rotateY(alpha){
         return new Mesh3D(this.triangles.map(triangle => new Mesh3DTriangle(triangle.vertices.map(vector3 => {
             var y = vector3.y;
@@ -227,6 +277,11 @@ class Mesh3D{
         }), triangle.color)))
     }
 
+    /**
+     * Rotates all Vertices around the origin via the Z-axis
+     * @param {Number} alpha in radians
+     * @returns {Mesh3D} the rotated Mesh
+     */
     rotateZ(alpha){
         return new Mesh3D(this.triangles.map(triangle => new Mesh3DTriangle(triangle.vertices.map(vector3 => {
             var z = vector3.z;
@@ -239,16 +294,27 @@ class Mesh3D{
     }
 }
 
+/**
+ * A collection of 2D Triangles
+ */
 class Mesh2D{
     constructor(mesh2Dtriangles){
         this.triangles = mesh2Dtriangles;
     }
 }
 
+/**
+ * A Projection wich transfers 3D-Meshes to 2D-Meshes with screen coordinates
+ */
 class Projection{
     constructor(){
 
     }
+    /**
+     * Projects the given 3D Mesh
+     * @param {Mesh3D} mesh to project
+     * @returns {Mesh2D} the projected Mesh in screen coordinates
+     */
     project(mesh){
         return new Mesh2D(mesh.triangles.map(triangle => new Mesh2DTriangle(triangle.vertices.map(vector3 => {
             var x = 0;
@@ -257,6 +323,7 @@ class Projection{
             x += vector3.x / vector3.z
             y += vector3.y / vector3.z
 
+            //If vector is behind camera...
             if(vector3.z < 1){
                 return new Vector2D(vector3.x * width/2 + width/2, vector3.y*width/2+ height/2)
             }
