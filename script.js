@@ -96,15 +96,15 @@ class Main{
         var meshes = []
 
         //Create some more Cubes and move them
-        for(var i = 0; i < 3; i++) {
+        for(var i = 0; i < 15; i++) {
             meshes.push(
                 this.cube
                 .translate(-0.5,-0.5,-0.5)
                 .rotateX(this.time*i*0.02)
                 .rotateZ(0.2*this.time*i)
-                .translate(i*3-4,0,0)
-                .rotateY(this.time)
-                .translate(0,Math.sin(i+this.time),8+ Math.cos(i+this.time))
+                .translate(i*3-20,0,0)
+                .rotateX(this.time)
+                .translate(0,Math.sin(i+this.time),20+ Math.cos(i+this.time))
             )
         }
         
