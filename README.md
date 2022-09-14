@@ -1,5 +1,5 @@
 # 3D-Graphics
- Simple 3D-Graphics Engine wich renders 3D triangular Meshes on a 2D screen
+ Simple 3D-Graphics Engine wich renders 3D triangular Meshes on a 2D screen (with issues :))
  
  # Watch the Results
  https://evanwonisch.github.io/3D-Graphics/
